@@ -1,0 +1,2 @@
+import { BookingButton } from './Booking';
+export default function Header() { return (<header><a href="#" className="brand" aria-label="毛茸茸首页"><span className="brand-icon">🐾</span><span><strong>毛茸茸</strong><small>PAW SPA & GROOMING</small></span></a><nav aria-label="主导航"><a href="#services">洗护服务</a><a href="#care">我们的用心</a><a href="#visit">到店指南</a><BookingButton className="btn small" service="基础洗护">预约洗护 <span>↗</span></BookingButton></nav></header>); }
