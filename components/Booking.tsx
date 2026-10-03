@@ -42,15 +42,20 @@ export function BookingProvider({children}: {children: ReactNode}) {
         const form = event.currentTarget;
         const petInput = form.elements.namedItem('pet') as HTMLInputElement;
         const dateInput = form.elements.namedItem('date') as HTMLInputElement;
+        const timeInput = form.elements.namedItem('time') as HTMLInputElement;
         const pet = petInput.value;
         const date = dateInput.value;
+        const time = timeInput.value;
         if (!pet.trim()) {petInput.setCustomValidity('请输入宠物昵称');petInput.reportValidity();return;}
         if (date < localDate()) {dateInput.setCustomValidity('请选择今天或之后的日期');dateInput.reportValidity();return;}
-        setResult(`已生成预约意向：${pet.trim()}，${date}，${service}。此意向仅在当前页面展示，尚未发送至门店，也未确认预约。`);
+        const arrival = new Date(`${date}T${time}`);
+        if (arrival.getTime() <= Date.now()) {timeInput.setCustomValidity('请选择未来的到店时间');timeInput.reportValidity();return;}
+        setResult(`已生成预约意向：${pet.trim()}，希望于 ${date} ${time} 到店，${service}。此意向仅在当前页面展示，尚未发送至门店，也未确认预约。`);
       }}><div className="form-grid">
         <label>宠物昵称<input name="pet" placeholder="小可爱叫什么名字？" required maxLength={30} onInput={event => event.currentTarget.setCustomValidity('')} /></label>
         <label>选择服务<select name="service" value={service} onChange={event => setService(event.target.value as Service)}><option value="基础洗护">香香基础洗护 · ¥89 起</option><option value="精致造型">元气精致造型 · ¥169 起</option><option value="深层护理">柔柔深层护理 · ¥229 起</option></select></label>
-        <label>期望到店日期<input type="date" name="date" required min={minimum} onInput={event => event.currentTarget.setCustomValidity('')} /></label>
+        <label>期望到店日期<input type="date" name="date" required min={minimum} onInput={event => {event.currentTarget.setCustomValidity('');const timeInput = event.currentTarget.form?.elements.namedItem('time') as HTMLInputElement | null;timeInput?.setCustomValidity('');}} /></label>
+        <label>希望到店时间<input type="time" name="time" required onInput={event => event.currentTarget.setCustomValidity('')} /></label>
         <button className="btn" type="submit">生成预约意向单 ↗</button>
       </div><p className="form-note">这是预约演示，不会发送信息或占用门店时段。正式预约需接入门店联系方式。</p></form>
       <div id="result" hidden={!result} aria-live="polite">{result}</div>
